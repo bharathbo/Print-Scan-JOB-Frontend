@@ -1,0 +1,15 @@
+C:\Users\nbharath\Documents\Visual Studio 2008\Projects\alxo\ALXO\ALXO\bin\ALXO.dll
+C:\Users\nbharath\Documents\Visual Studio 2008\Projects\alxo\ALXO\ALXO\bin\ALXO.pdb
+C:\Users\nbharath\Documents\Visual Studio 2008\Projects\alxo\ALXO\ALXO\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\nbharath\Documents\Visual Studio 2008\Projects\alxo\ALXO\ALXO\obj\Debug\ALXO.dll
+C:\Users\nbharath\Documents\Visual Studio 2008\Projects\alxo\ALXO\ALXO\obj\Debug\ALXO.pdb
+C:\Users\nbharath\Documents\Visual Studio 2008\Projects\ccc\Alxo\bin\ALXO.dll
+C:\Users\nbharath\Documents\Visual Studio 2008\Projects\ccc\Alxo\bin\ALXO.pdb
+C:\Users\nbharath\Documents\Visual Studio 2008\Projects\ccc\Alxo\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\nbharath\Documents\Visual Studio 2008\Projects\ccc\Alxo\obj\Debug\ALXO.dll
+C:\Users\nbharath\Documents\Visual Studio 2008\Projects\ccc\Alxo\obj\Debug\ALXO.pdb
+C:\inetpub\wwwroot\frontend\bin\ALXO.dll
+C:\inetpub\wwwroot\frontend\bin\ALXO.pdb
+C:\inetpub\wwwroot\frontend\obj\Debug\ResolveAssemblyReference.cache
+C:\inetpub\wwwroot\frontend\obj\Debug\ALXO.dll
+C:\inetpub\wwwroot\frontend\obj\Debug\ALXO.pdb

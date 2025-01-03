@@ -1,0 +1,55 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="scripts/main.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body style="background-color: #65B5CD; margin: 0; height: 100vh; display: flex; justify-content: center; align-items: center;">
+    
+    <div id="popup-container" style="display: none; position: fixed; background: white; width: 510px; height: 490px; border: 1px solid black; z-index: 1000;">
+        <div id="popup-header" style="background: black; color: white; padding: 10px; display: flex; justify-content: space-between; align-items: center;">
+            <span id="popup-title">Welcome to OSA</span>
+            <div>
+                <button id="minimize" style="background: none; color: white; border: none; cursor: pointer;">-</button>
+                <button id="close" style="background: none; color: white; border: none; cursor: pointer;">x</button>
+            </div>
+        </div>
+        
+        <div id="popup-content" style="padding: 20px;">
+            <!-- Dynamically loaded content will appear here -->
+        </div>
+    </div>
+
+    <script>
+        // Ensure script runs after DOM is fully loaded
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById("close").addEventListener("click", function () {
+                document.getElementById("popup-container").style.display = "none"; // Hide the popup
+            });
+
+            document.getElementById("minimize").addEventListener("click", function () {
+                const content = document.getElementById("popup-content");
+                content.style.display = content.style.display === "none" ? "block" : "none"; 
+            });
+        });
+
+        // Function to load a page into the popup container
+        function loadPopup(title, url) {
+            document.getElementById("popup-title").textContent = title; // Set title of the popup
+
+            // Fetch the content from the page and inject it into the popup
+            fetch(url)
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById("popup-content").innerHTML = html;
+                    document.getElementById("popup-container").style.display = "block"; // Show the popup
+                })
+                .catch(err => console.log('Failed to load page: ', err));
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - OSA</title>
+</head>
+<body>
+    <div style="border: 1px solid black; width: 300px; margin: 60px auto; background-color: white; padding: 20px; font-family: monospace;">
+        <div style="background-color: #443E3E; color: white; padding: 5px; text-align: center;">
+            <span>Welcome to OSA</span>
+        </div>
+        <div id="content-section">
+            <div style="margin-bottom: 10px;">
+                <label>Username:</label>
+                <input type="text" id="username" style="width: 98%; border: 1px solid black;">
+            </div>
+            <div style="margin-bottom: 10px;">
+                <label>Password:</label>
+                <input type="password" id="password" style="width: 98%; border: 1px solid black;">
+            </div>
+            
+            <div style="margin-bottom: 10px;">
+                <label>Role ID:</label>
+                <input type="text" id="role" style="width: 98%; border: 1px solid black;">
+            </div>
+            
+            <div id="error-message" style="color: red; margin-bottom: 10px;"></div> <!-- Error message area -->
+            <button id="login-button" style="width: 100%; padding: 5px; background-color: #443E3E; color: white; border: none; cursor: pointer;">Login</button>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("login-button").addEventListener("click", function () {
+            var username = document.getElementById("username").value;
+            var password = document.getElementById("password").value;
+            var roleID = document.getElementById("role").value;
+
+            var errorMessageDiv = document.getElementById("error-message");
+            errorMessageDiv.innerHTML = "";
+
+            if (!username || !password || !roleID) {
+                errorMessageDiv.innerHTML = "All fields are required.";
+                return;
+            }
+
+            // Create URL-encoded payload
+            var payload = `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}&roleID=${encodeURIComponent(roleID)}`;
+
+            // Send the request as application/x-www-form-urlencoded
+            fetch('http://172.29.240.172/osa/Service1.asmx/ValidateUser', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded', // Specify URL-encoded content type
+                },
+                body: payload
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Network response was not ok");
+                }
+                return response.json(); 
+            })
+            .then(responseData => {
+                console.log("Parsed response:", responseData);
+
+                if (responseData.status === "success") {
+                    
+                   window.loadPopup("Select Operation", "select-operation.html");
+                } else if (responseData.status === "error") {
+                    errorMessageDiv.innerHTML = responseData.message;
+                } else {
+                    errorMessageDiv.innerHTML = "An unexpected error occurred.";
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                errorMessageDiv.innerHTML = "An error occurred while processing your request.";
+            });
+        });
+    </script>
+</body>
+</html>
