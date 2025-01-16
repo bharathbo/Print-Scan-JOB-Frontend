@@ -1,0 +1,57 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scanning Complete</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // Function to get query parameters from the URL
+        function getQueryParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const fileName = urlParams.get('fileName');
+            const folderPath = urlParams.get('folderPath');
+            const dateScanned = urlParams.get('dateScanned');
+
+            return { fileName, folderPath, dateScanned };
+        }
+
+        // Function to load and display data in the table
+        function loadScanningCompleteData() {
+            const { fileName, folderPath, dateScanned } = getQueryParams();
+
+            if (fileName && folderPath && dateScanned) {
+                $('#scanResult').append(`
+                    <tr>
+                        <td>${fileName}</td>
+                        <td>${folderPath}</td>
+                        <td>${dateScanned}</td>
+                    </tr>
+                `);
+            } else {
+                console.error('No valid file data found in the URL parameters.');
+            }
+        }
+
+        $(document).ready(function () {
+            loadScanningCompleteData();
+        });
+    </script>
+</head>
+<body>
+    <h2>Scanning Complete files are</h2>
+   
+    <table border="1">
+        <thead>
+            <tr>
+                <th>File Name</th>
+                <th>Folder Name</th>
+                <th>Date Scanned</th>
+            </tr>
+        </thead>
+        <tbody id="scanResult">
+            <!-- Data will be appended here -->
+        </tbody>
+    </table>
+</body>
+</html>//

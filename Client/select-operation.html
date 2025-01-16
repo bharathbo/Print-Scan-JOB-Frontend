@@ -4,33 +4,37 @@
     </button>
 </div>
 
-<div style="border: 1px solid black; margin: auto; width: 300px; height: 150px; margin-top: 50px; background-color: white; padding: 10px; font-family: monospace;">
-    <div style="background-color: #443E3E; color: white; padding: 5px; text-align: center;">
-        <span>Please select the operation!</span>
+
+   
+    <div id="content-section" style="text-align: center; font-size:18px;margin-top: 100px;">
+        <button id="scan-button" style="width: 50%; font-size: 22px; height: 100%;padding: 10px; background-color: #443E3E; color: white; border: none; cursor: pointer; margin-bottom: 30px;">Scan</button>
+        <button id="print-button" style="width: 50%; font-size: 22px;height: 100%; padding: 10px; background-color: #443E3E; color: white; border: none; cursor: pointer;">Print</button>
     </div>
-    <div id="content-section" style="text-align: center; margin-top: 10px;">
-        <button id="scan-button" style="width: 80%; padding: 10px; background-color: #443E3E; color: white; border: none; cursor: pointer; margin-bottom: 10px;">Scan</button>
-        <button id="print-button" style="width: 80%; padding: 10px; background-color: #443E3E; color: white; border: none; cursor: pointer;">Print</button>
-    </div>
-</div>
+
+
+</body>
+
+
+</body>
+
 
 
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        // Event listeners for buttons
+        
         document.getElementById("scan-button").addEventListener("click", function () {
-            loadPopup("Scan", "scan.html"); // Load the scan page in popup
+            loadPopup("Scan", "scan.html");
         });
 
         document.getElementById("print-button").addEventListener("click", function () {
-            loadPopup("Print", "print.html"); // Load the print page in popup
+            loadPopup("Print", "print.html"); 
         });
 
         
 
         document.getElementById("logout").addEventListener("click", function () {
-            loadPopup("Login", "login.html"); // Load the login page in popup
+            loadPopup("Login", "login.html"); 
         });
     });
 </script>

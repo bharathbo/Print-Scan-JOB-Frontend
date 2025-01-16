@@ -3,21 +3,32 @@
     const popupTitle = $("#popup-title");
     const popupContent = $("#popup-content");
 
-    window.loadPopup = function (title, pageUrl) {
-        popupTitle.text(title);
-        
-        popupContent.load(pageUrl, function (response, status, xhr) {
-            if (status === "error") {
-                displayErrorMessage("Failed to load content.");
-            } else {
-                if (pageUrl === "scan.html") {
-                    getFolders();  
-                }
+   window.loadPopup = function (title, pageUrl) {
+    popupTitle.text(title);
+    popupContent.empty(); // Clear previous content
+    
+    popupContent.load(`${pageUrl}?t=${new Date().getTime()}`, function (response, status, xhr) {
+        if (status === "error") {
+            alert("Failed to load content.");
+        } else {
+            if (pageUrl === "scan.html") {
+                resetScanPage();
+                loadSystemFolders();
             }
-        });
+        }
+    });
 
-        popupContainer.show(); 
-    };
+    popupContainer.show();
+};
+
+function resetScanPage() {
+    $('#folderSelect').empty();
+    $('#fileTable').empty();
+    $('#scanningPopup').hide();
+    $('#scanCompletionModal').hide();
+}
+
+
 
     function displayErrorMessage(message) {
         alert(message);
@@ -55,3 +66,4 @@
         loadPopup("Login", "login.html");
     });
 });
+

@@ -57,6 +57,7 @@
     <Content Include="Client\login.html" />
     <Content Include="Client\print.html" />
     <Content Include="Client\scan.html" />
+    <Content Include="Client\scanningcomplete.html" />
     <Content Include="Client\scripts\main.js" />
     <Content Include="Client\select-operation.html" />
     <Content Include="Default.aspx" />

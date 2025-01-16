@@ -3,194 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Select Operation</title>
+    <title>Folder Navigation</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
- <script>
-    function displayDefaultFiles() {
-        const defaultFiles = [
-            { FileName: "scan.pdf", DateModified: "2024-11-30", FileType: "PDF", FileSize: 512 },
-            { FileName: "faxsend.pdf", DateModified: "2024-11-29", FileType: "PDF", FileSize: 2048 },
-            { FileName: "IFax.docx", DateModified: "2024-11-28", FileType: "DOCX", FileSize: 1024 }
-        ];
-        updateScannedFilesHeading("Default Files");
-        populateTable(defaultFiles);
-    }
-
-    function updateScannedFilesHeading(source) {
-        const heading = document.querySelector("#file-info-section h4");
-        heading.textContent = `Files (${source}):`;
-    }
-
-    function populateTable(files) {
-        const fileTable = $('#fileTable');
-        fileTable.empty();
-
-        fileTable.append(`
-            <tr>
-                <th>File Name</th>
-                <th>Date Modified</th>
-                <th>File Type</th>
-                <th>File Size</th>
-            </tr>
-        `);
-
-        if (files.length > 0) {
-            files.forEach(file => {
-                fileTable.append(`
-                    <tr>
-                        <td>${file.FileName}</td>
-                        <td>${file.DateModified}</td>
-                        <td>${file.FileType}</td>
-                        <td>${file.FileSize} KB</td>
-                    </tr>
-                `);
-            });
-        } else {
-            fileTable.append('<tr><td colspan="4">No files found.</td></tr>');
-        }
-    }
-
-    function listFiles() {
-        const folderPath = $('#folderSelect').val();
-        if (!folderPath) {
-            alert("Please select a folder.");
-            return;
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
         }
 
-        const payload = `folderPath=${encodeURIComponent(folderPath)}`;
-
-        $.ajax({
-            url: 'http://172.29.240.172/osa/Service1.asmx/GetFilesWithPathsInFolder',
-            type: 'POST',
-            contentType: 'application/x-www-form-urlencoded',
-            data: payload,
-            success: function(response) {
-                const files = parseFilesResponse(response);
-                updateScannedFilesHeading("Fetched Files");
-                populateTable(files);
-            },
-            error: function(xhr, status, error) {
-                console.error('Error:', error);
-            }
-        });
-    }
-
-    function parseFilesResponse(response) {
-        const files = [];
-        $(response).find('FileInfo').each(function() {
-            const file = {
-                FileName: $(this).find('FileName').text(),
-                DateModified: $(this).find('DateModified').text(),
-                FileType: $(this).find('FileType').text(),
-                FileSize: $(this).find('FileSize').text(),
-            };
-            files.push(file);
-        });
-        return files;
-    }
-
-    function getFolders() {
-        $.ajax({
-            url: 'http://172.29.240.172/osa/Service1.asmx/GetSystemFolders',
-            type: 'POST',
-            contentType: 'application/x-www-form-urlencoded',
-            success: function(response) {
-                const folderNodes = $(response).find('string');
-                const folderSelect = $('#folderSelect');
-                folderSelect.empty();
-                folderSelect.append('<option value="" disabled selected>-- Select Folder --</option>');
-
-                folderNodes.each(function() {
-                    const folderName = $(this).text();
-                    folderSelect.append(`<option value="${folderName}">${folderName}</option>`);
-                });
-            },
-            error: function(xhr, status, error) {
-                console.error('Error:', error);
-            }
-        });
-    }
-
-    function startScan() {
-        const folderPath = $('#folderSelect').val();
-        if (!folderPath) {
-            alert("Please select a folder.");
-            return;
+        label {
+            font-size: 16px;
+            font-weight: bold;
         }
 
-        $('#scanningPopup').show();
+        select {
+            width: 250px;
+            padding: 5px;
+            margin: 10px 0;
+            font-size: 14px;
+        }
 
-        setTimeout(() => {
-            const payload = `folderPath=${encodeURIComponent(folderPath)}`;
+        button {
+            padding: 5px 10px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        #scanCompletionModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            color: white;
+        }
 
-            $.ajax({
-                url: 'http://172.29.240.172/osa/Service1.asmx/StartScan',
-                type: 'POST',
-                contentType: 'application/x-www-form-urlencoded',
-                data: payload,
-                success: function(response) {
-                    $('#scanningPopup').hide();
-                    $('#completionPopup').show();
+        #modalContent {
+            margin: 10% auto;
+            padding: 20px;
+            background-color: #333;
+            width: 80%;
+            max-width: 600px;
+            text-align: center;
+        }
 
-                    const files = parseFilesResponse(response);
-                    updateScannedFilesHeading("Updated Files");
-                    populateTable(files);
-                },
-                error: function(xhr, status, error) {
-                    $('#scanningPopup').hide();
-                    console.error('Error:', error);
-                }
-            });
-        }, 3000);
-    }
-
-    function addNewFile() {
-        $('#completionPopup').hide();
-        listFiles();
-    }
-
-    $(document).ready(() => {
-        getFolders();
-        displayDefaultFiles();
-    });
-
-    document.getElementById("back-button").addEventListener("click", function() {
-        loadPopup("select-operation", "select-operation.html");
-    });
-</script>
-
+        #closeModal {
+            padding: 10px;
+            background-color: red;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-    <div style="padding: 10px; text-align: right;">
-        <button id="logout" style="background: none; border: none; color: black; font-size: 24px; cursor: pointer;" onclick="logout()">
-            <i class="fa fa-power-off" style="font-size: 24px;"></i>
-        </button>
-    </div>
+<div style="padding: 10px; text-align: right;">
+    <button id="logout" style="background: none; border: none; color: black; font-size: 24px; cursor: pointer;">
+        <i class="fa fa-power-off" style="font-size: 24px;"></i>
+    </button>
+</div>
+    
+        <div style="margin-top: 50px;">
+               <label for="folderSelect" style="font-weight: bold; margin-left: 95px;">Select Folder:</label>
+<select id="folderSelect" style="font-size: 19px; padding: 5px;">
+</select>
 
-    <div style="border: 1px solid black; width: 400px; margin: 20px auto; background-color: white; padding: 10px; font-family: monospace;">
-        <div style="background-color: #443E3E; color: white; padding: 5px; text-align: center;">
-            <span>Scan Document!</span>
+            
+       
+            <button onclick="navigateToSubFolder()" style="margin-left: 10px; padding: 10px 20px; font-size: 19px; background-color: #443E3E; color: white; border: none; cursor: pointer; border-radius: 4px;">&#8595; Go</button>
+            <button onclick="navigateToParentFolder()" style="margin-left: 10px; padding: 10px 20px; font-size: 19px; background-color: #443E3E; color: white; border: none; cursor: pointer; border-radius: 4px;">&#8593; Up</button>
         </div>
 
-        <div id="content-section" style="margin-top: 10px;">
-            <div style="margin-bottom: 10px; display: flex; align-items: center;">
-                <label style="flex: 1;">Select Folder:</label>
-                <select id="folderSelect" style="background-color: white; border: 1px solid black; padding: 5px; flex: 2;" onchange="listFiles()">
-                    <option value="" disabled selected>-- Select Folder --</option>
-                </select>
-            </div>
-        </div>
+        <div id="fileTable" style="margin-top: 40px;"></div>
 
-        <div id="file-info-section" style="margin-top: 20px; border-top: 1px solid black; padding-top: 10px;">
-            <h4>Files (Default Files):</h4>
-            <table id="fileTable" border="1"></table>
+        <div style="margin-top: 150px;">
+            <button id="back-button" style="margin-left: 180px; padding: 10px 20px; font-size: 19px; background-color: #443E3E; color: white; border: none; cursor: pointer; border-radius: 4px;" onclick="goBack()">Back</button>
+            <button id="scan-start" style="margin-left: 170px;padding: 10px 20px; font-size: 19px; background-color: #443E3E; color: white; border: none; cursor: pointer; border-radius: 4px;" onclick="startScann()">Start scan</button>
         </div>
-    </div>
-    <div style="margin-top: 20px; text-align: center;">
-            <button id="back-button" style="margin-right: 10px; padding: 5px 20px; background-color: #443E3E; color: white; border: none; cursor: pointer;" onclick="goBack()">Back</button>
-            <button id="scan-start" style="padding: 5px 20px; background-color: #443E3E; color: white; border: none; cursor: pointer;" onclick="startScan()">Start Scan</button>
-        </div>
-
+   
+    
     <div id="scanningPopup" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); color: white; text-align: center; padding-top: 20%;">
         <div style="background-color: #333; padding: 20px; border-radius: 5px; display: inline-block;">
             <p>Scanning in progress...</p>
@@ -198,12 +91,9 @@
         </div>
     </div>
 
-    <div id="completionPopup" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); color: white; text-align: center; padding-top: 20%;">
-        <div style="background-color: #333; padding: 20px; border-radius: 5px; display: inline-block;">
-            <p>Scan Completed!</p>
-            <button style="padding: 5px 20px; background-color: #443E3E; color: white; border: none; cursor: pointer;" onclick="addNewFile()">OK</button>
-        </div>
-    </div>
+
+  
+   
 
     <style>
         @keyframes spin {
@@ -211,5 +101,197 @@
             100% { transform: rotate(360deg); }
         }
     </style>
+    
+    <div id="scanCompletionModal" style="display: flex; justify-content: center; align-items: center; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color:  rgba(0, 0, 0, 0.5); color: black; text-align: center; z-index: 9999;">
+    <div id="modalContent" style="background-color: white; padding: 20px; border-radius: 8px; width: 300px; overflow-y: auto; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);">
+        <h3 style="margin-bottom: 20px; text-align: center; font-family: Arial, sans-serif; font-size: 20px; color: #333;">Scan Completed</h3>
+        <table id="scannedFilesTable" border="1" style="width: 100%; table-layout: fixed; border-collapse: collapse; background-color: white; margin-bottom: 20px;">
+            <tr style="background-color: #333; color: white;">
+                
+            </tr>
+          
+        </table>
+        <button id="closeModal" onclick="closeModal()" style="margin-bottom :10px;padding: 10px 20px;font-size: 17px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; font-size: 16px; cursor: pointer;">
+            Close
+        </button>
+    </div>
+</div>
+</div>
+</body>
+    <script>
+    
+      $(document).on("click", "#back-button", function () {
+       loadPopup("select-operation", "select-operation.html");
+    });
+    
+    function closeModal() {
+            $('#scanCompletionModal').hide();
+        }
+        let folderHistory = []; 
+        let currentFolder = null; 
+
+        $(document).ready(function () {
+    loadSystemFolders();
+});
+
+function loadSystemFolders() {
+    $.ajax({
+        url: 'http://172.29.242.203/osa/Service1.asmx/GetSystemFolders',
+        method: 'POST',
+        contentType: 'application/x-www-form-urlencoded',
+        success: function (response) {
+            const folderNodes = $(response).find('string');
+            const folderSelect = $('#folderSelect');
+            folderSelect.empty(); 
+
+            if (folderNodes.length > 0) {
+                folderNodes.each(function (index) {
+                    const folderName = $(this).text();
+                    
+                    folderSelect.append(`<option value="${folderName}">${folderName}</option>`);
+                });
+
+                
+                folderSelect.val(folderNodes.first().text());
+            } else {
+                alert('No folders available.');
+            }
+        },
+        error: function () {
+            alert('Failed to load system folders.');
+        }
+    });
+}
+
+
+       
+        function navigateToSubFolder() {
+            const selectedFolder = $('#folderSelect').val();
+            if (!selectedFolder) {
+                alert('Please select a folder first.');
+                return;
+            }
+
+            folderHistory.push(currentFolder); 
+            currentFolder = selectedFolder; 
+
+            $.ajax({
+                url: 'http://172.29.242.203/osa/Service1.asmx/GetSubFolders',
+                method: 'POST',
+                data: $.param({ folderPath: selectedFolder }),
+                contentType: 'application/x-www-form-urlencoded',
+                success: function (response) {
+                    const folderNodes = $(response).find('FolderContent');
+                    const folderSelect = $('#folderSelect');
+                    folderSelect.empty();
+                    folderSelect.append(`<option value="${selectedFolder}">${selectedFolder}</option>`);
+
+                    folderNodes.each(function () {
+                        const subfolderName = $(this).find('Name').text();
+                        folderSelect.append(`<option value="${subfolderName}">&nbsp;&nbsp;&nbsp;${subfolderName}</option>`);
+                    });
+                },
+                error: function () {
+                    alert('Failed to load subfolders.');
+                }
+            });
+        }
+
+        
+        function navigateToParentFolder() {
+            if (folderHistory.length === 0) {
+                loadSystemFolders(); 
+                currentFolder = null;
+                return;
+            }
+
+            const parentFolder = folderHistory.pop();
+            currentFolder = parentFolder;
+
+            if (!parentFolder) {
+                loadSystemFolders(); 
+                return;
+            }
+
+           
+            $.ajax({
+                url: 'http://172.29.242.203/osa/Service1.asmx/GetSubFolders',
+                method: 'POST',
+                data: $.param({ folderPath: parentFolder }),
+                contentType: 'application/x-www-form-urlencoded',
+                success: function (response) {
+                    const folderNodes = $(response).find('FolderContent');
+                    const folderSelect = $('#folderSelect');
+                    folderSelect.empty();
+                    folderSelect.append(`<option value="${parentFolder}">${parentFolder}</option>`);
+
+                    folderNodes.each(function () {
+                        const subfolderName = $(this).find('Name').text();
+                        folderSelect.append(`<option value="${subfolderName}">&nbsp;&nbsp;&nbsp;${subfolderName}</option>`);
+                    });
+                },
+                error: function () {
+                    alert('Failed to load subfolders.');
+                }
+            });
+        }
+   function startScann() {
+    const selectedFolder = $('#folderSelect').val(); 
+    if (!selectedFolder) {
+        alert('Please select a folder first.');
+        return;
+    }
+
+    $('#scanningPopup').show();
+
+    
+    setTimeout(() => {
+        $.ajax({
+            url: 'http://172.29.242.203/osa/Service1.asmx/ScanMethod',
+            method: 'POST',
+            data: $.param({ folderPath: selectedFolder }), 
+            contentType: 'application/x-www-form-urlencoded',
+            success: function (response) {
+                const scannedFilesTable = $('#scannedFilesTable'); 
+                
+               
+                scannedFilesTable.find('tr:gt(0)').remove();
+
+               
+                const currentDateTime = new Date().toLocaleString();
+
+                
+                const files = $(response).find('FileInfo');
+                files.each(function () {
+                    const fileName = $(this).find('FileName').text();
+                    const folderPath = $(this).find('FolderPath').text();
+                    const dateModified = $(this).find('DateModified').text();
+
+                    
+                    const fullFolderPath = `${selectedFolder}/${folderPath}`;
+
+                    
+                    scannedFilesTable.append(`
+                        <tr>
+                            <td>${fileName}</td>
+                            <td>${fullFolderPath}</td> 
+                            <td>${currentDateTime}</td> 
+                        </tr>
+                    `);
+                });
+
+                $('#scanningPopup').hide(); 
+                $('#scanCompletionModal').show();
+            },
+            error: function () {
+                $('#scanningPopup').hide(); 
+                alert('Failed to scan folder.');
+            }
+        });
+    }, 5000); 
+}
+
+
+    </script>
 </body>
 </html>

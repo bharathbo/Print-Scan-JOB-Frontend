@@ -3,31 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - OSA</title>
+    
 </head>
 <body>
-    <div style="border: 1px solid black; width: 300px; margin: 60px auto; background-color: white; padding: 20px; font-family: monospace;">
-        <div style="background-color: #443E3E; color: white; padding: 5px; text-align: center;">
-            <span>Welcome to OSA</span>
+    <div id="content-section" style="padding: 90px; margin-left: 100px; "  >
+        <div style="display: flex; align-items: center; marign-right: 10px; margin-bottom: 15px;">
+            <label style="width: 20%; text-align: left; font-size: 18px; font-weight: bold;">Username:</label>
+            <input type="text" id="username" style="width: 64%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px;">
         </div>
-        <div id="content-section">
-            <div style="margin-bottom: 10px;">
-                <label>Username:</label>
-                <input type="text" id="username" style="width: 98%; border: 1px solid black;">
-            </div>
-            <div style="margin-bottom: 10px;">
-                <label>Password:</label>
-                <input type="password" id="password" style="width: 98%; border: 1px solid black;">
-            </div>
-            
-            <div style="margin-bottom: 10px;">
-                <label>Role ID:</label>
-                <input type="text" id="role" style="width: 98%; border: 1px solid black;">
-            </div>
-            
-            <div id="error-message" style="color: red; margin-bottom: 10px;"></div> <!-- Error message area -->
-            <button id="login-button" style="width: 100%; padding: 5px; background-color: #443E3E; color: white; border: none; cursor: pointer;">Login</button>
+        <div style="display: flex; align-items: center; margin-bottom: 15px;">
+            <label style="width: 20%; text-align: left; font-size: 18px; font-weight: bold;">Password:</label>
+            <input type="password" id="password" style="width: 64%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px;">
         </div>
+        <div style="display: flex; align-items: center; margin-bottom: 15px;">
+            <label style="width: 20%; text-align: left; font-size: 18px; font-weight: bold;">Role ID:</label>
+            <input type="text" id="role" style="width: 64%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px;">
+        </div>
+        <div id="error-message" style="color: red; margin-bottom: 29px; font-size: 17px;"></div>
+        <button id="login-button" style="width: 40%; margin-left:236px;padding: 10px; background-color: #443E3E; color: white; border: none; cursor: pointer; font-size: 16px; border-radius: 4px;">Login</button>
     </div>
 
     <script>
@@ -44,14 +37,12 @@
                 return;
             }
 
-            // Create URL-encoded payload
             var payload = `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}&roleID=${encodeURIComponent(roleID)}`;
 
-            // Send the request as application/x-www-form-urlencoded
-            fetch('http://172.29.240.172/osa/Service1.asmx/ValidateUser', {
+            fetch('http://172.29.242.203/osa/Service1.asmx/ValidateUser', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded', // Specify URL-encoded content type
+                    'Content-Type': 'application/x-www-form-urlencoded',
                 },
                 body: payload
             })
@@ -65,8 +56,7 @@
                 console.log("Parsed response:", responseData);
 
                 if (responseData.status === "success") {
-                    
-                   window.loadPopup("Select Operation", "select-operation.html");
+                    window.loadPopup("Select Operation", "select-operation.html");
                 } else if (responseData.status === "error") {
                     errorMessageDiv.innerHTML = responseData.message;
                 } else {
